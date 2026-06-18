@@ -1,0 +1,40 @@
+# Dependências
+/vendor
+/node_modules
+
+# Build / assets compilados
+/public/build
+/public/hot
+/public/storage
+/bootstrap/ssr
+
+# Ambiente / segredos
+.env
+.env.backup
+.env.production
+auth.json
+
+# Banco de dados local (SQLite)
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# Storage / chaves / caches
+/storage/*.key
+/storage/pail
+/.phpunit.cache
+.phpunit.result.cache
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Ferramentas / IDEs
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+
+# Sistema operacional / serviços de sincronização (iCloud, etc.)
+.DS_Store
+Thumbs.db
