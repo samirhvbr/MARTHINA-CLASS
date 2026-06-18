@@ -17,6 +17,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | A versão do projeto fica em version.md (raiz). Lemos o primeiro número
+    | semver (X.Y.Z) do arquivo e expomos via config('app.version').
+    |
+    */
+
+    'version' => (function (): string {
+        $file = dirname(__DIR__).'/version.md';
+
+        if (is_file($file) && preg_match('/\d+\.\d+\.\d+/', (string) file_get_contents($file), $matches)) {
+            return $matches[0];
+        }
+
+        return '0.0.0';
+    })(),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
