@@ -38,3 +38,6 @@ yarn-error.log
 # Sistema operacional / serviços de sincronização (iCloud, etc.)
 .DS_Store
 Thumbs.db
+
+# Claude Code — config local da sessao
+.claude/settings.local.json
