@@ -1,64 +1,64 @@
 # 🎓 Marthina Learning
 
-Plataforma educacional gamificada para crianças. Ensina **vocabulário de inglês** e aplica **quizzes por matéria** de forma lúdica, com sistema de pontos, XP, troféus e ranking para manter a criança engajada.
+Gamified educational platform for children. It teaches **English vocabulary** and applies **subject-based quizzes** in a playful way, with a system of points, XP, trophies and a ranking to keep the child engaged.
 
-A interface é colorida e amigável (fontes _Baloo 2_ / _Nunito_, paleta suave), pensada para o público infantil.
-
----
-
-> **Ver também:** [CLAUDE.md](CLAUDE.md) (convenções de código e guia para agentes) · [SECURITY_GUIDELINES.md](SECURITY_GUIDELINES.md) (segurança — revisar a cada mudança de stack ou novo input de usuário) · [version.md](version.md) (versão e changelog).
-
-## 🔖 Versão (`version.md`)
-
-A versão do projeto fica em [`version.md`](version.md) na raiz, lida em runtime via `config('app.version')`. Formato `X.Y.Z`:
-
-- **X** — versão estável final (manual)
-- **Y** — mudança estrutural significativa (manual)
-- **Z** — incremento por nova tela, nova tabela, mudança de layout, regra de negócio ou feature
-
-Commits seguem o formato `X.Y.Z - descrição` (em português).
+The interface is colorful and friendly (_Baloo 2_ / _Nunito_ fonts, a soft palette), designed for a young audience.
 
 ---
 
-## ✨ Funcionalidades
+> **See also:** [CLAUDE.md](CLAUDE.md) (code conventions and agent guide) · [SECURITY_GUIDELINES.md](SECURITY_GUIDELINES.md) (security — review on every stack change or new user input) · [version.md](version.md) (version and changelog).
 
-- 📚 **Vocabulário de inglês** — palavras com imagem, organizadas por categoria.
-- 🧠 **Quizzes** — perguntas de múltipla escolha agrupadas por matéria (_subjects_) e categoria.
-- ⭐ **Pontuação & XP** — registra acertos, pontos e experiência a cada atividade.
-- 🏆 **Ranking & troféus** — classificação entre os jogadores e troféus por desempenho (ouro/prata/bronze).
-- 👤 **Perfis** — avatar, nome de exibição e progresso individual.
-- 🙋 **Modo convidado** — joga sem criar conta; o progresso fica na sessão.
-- 🔐 **Autenticação completa** — registro (com proteção anti-bot), login e recuperação de senha.
-- 🛠️ **Painel administrativo** — gestão de usuários e conteúdo, com auditoria das ações do admin.
+## 🔖 Version (`version.md`)
+
+The project version lives in [`version.md`](version.md) at the root, read at runtime via `config('app.version')`. Format `X.Y.Z`:
+
+- **X** — final stable version (manual)
+- **Y** — significant structural change (manual)
+- **Z** — increment for a new screen, new table, layout change, business rule or feature
+
+Commits follow the format `X.Y.Z - description` (in Portuguese).
 
 ---
 
-## 🧰 Tecnologias
+## ✨ Features
 
-| Camada | Tecnologia |
+- 📚 **English vocabulary** — words with an image, organized by category.
+- 🧠 **Quizzes** — multiple-choice questions grouped by subject (_subjects_) and category.
+- ⭐ **Scoring & XP** — records correct answers, points and experience on each activity.
+- 🏆 **Ranking & trophies** — ranking among players and trophies by performance (gold/silver/bronze).
+- 👤 **Profiles** — avatar, display name and individual progress.
+- 🙋 **Guest mode** — play without creating an account; progress is kept in the session.
+- 🔐 **Full authentication** — registration (with anti-bot protection), login and password recovery.
+- 🛠️ **Admin panel** — user and content management, with auditing of the admin's actions.
+
+---
+
+## 🧰 Technologies
+
+| Layer | Technology |
 |--------|------------|
 | Backend | PHP 8.2+ · [Laravel 12](https://laravel.com) |
-| Componentes reativos | [Livewire 4](https://livewire.laravel.com) |
+| Reactive components | [Livewire 4](https://livewire.laravel.com) |
 | Front-end / build | [Vite 7](https://vitejs.dev) · [Tailwind CSS 4](https://tailwindcss.com) |
-| UI auxiliar (CDN) | Bootstrap 5 · Font Awesome 6 |
-| Banco de dados | **MariaDB / MySQL** (PostgreSQL aceito) |
+| Auxiliary UI (CDN) | Bootstrap 5 · Font Awesome 6 |
+| Database | **MariaDB / MySQL** (PostgreSQL accepted) |
 
-> 🛢️ **Banco de dados:** sempre **MariaDB/MySQL** (ou PostgreSQL). **SQLite não é usado em nenhum contexto**, nem em desenvolvimento.
+> 🛢️ **Database:** always **MariaDB/MySQL** (or PostgreSQL). **SQLite is not used in any context**, not even in development.
 
 ---
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
-- **PHP** >= 8.2 (com as extensões padrão do Laravel)
+- **PHP** >= 8.2 (with Laravel's standard extensions)
 - **Composer**
 - **Node.js** + **npm**
-- **MariaDB** (ou MySQL / PostgreSQL) em execução
+- **MariaDB** (or MySQL / PostgreSQL) running
 
 ---
 
-## 🚀 Instalação
+## 🚀 Installation
 
-### 1. Crie o banco de dados
+### 1. Create the database
 
 ```sql
 CREATE DATABASE marthina CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -67,7 +67,7 @@ GRANT ALL PRIVILEGES ON marthina.* TO 'marthina'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 2. Dependências e ambiente
+### 2. Dependencies and environment
 
 ```bash
 composer install
@@ -77,9 +77,9 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-### 3. Configure o `.env`
+### 3. Configure `.env`
 
-Ajuste as credenciais do banco e o admin inicial **antes** de migrar:
+Adjust the database credentials and the initial admin **before** migrating:
 
 ```env
 DB_CONNECTION=mysql
@@ -93,46 +93,46 @@ ADMIN_EMAIL=admin@marthina.com.br
 ADMIN_PASSWORD=defina-uma-senha-forte
 ```
 
-### 4. Migrations, seeders e assets
+### 4. Migrations, seeders and assets
 
 ```bash
 php artisan migrate --seed
 npm run build
 ```
 
-> 💡 O script `composer setup` automatiza dependências, `.env`, key, migrations e build — **configure o banco no `.env` antes de rodá-lo**.
+> 💡 The `composer setup` script automates dependencies, `.env`, key, migrations and build — **configure the database in `.env` before running it**.
 
 ---
 
-## 🧑‍💻 Desenvolvimento
+## 🧑‍💻 Development
 
-Para subir tudo de uma vez (servidor, fila, logs e Vite em paralelo):
+To bring everything up at once (server, queue, logs and Vite in parallel):
 
 ```bash
 composer dev
 ```
 
-Ou separadamente:
+Or separately:
 
 ```bash
 php artisan serve     # http://localhost:8000
-npm run dev           # Vite em modo watch
+npm run dev           # Vite in watch mode
 ```
 
 ---
 
-## 🗄️ Banco de dados & Seeders
+## 🗄️ Database & Seeders
 
-As migrations criam as tabelas de usuários, palavras (`eng_words`), categorias, matérias, perguntas/opções, pontuações, resultados de quiz e auditoria de ações do admin.
+The migrations create the tables for users, words (`eng_words`), categories, subjects, questions/options, scores, quiz results and audit of admin actions.
 
-Seeders disponíveis (`database/seeders/`):
+Available seeders (`database/seeders/`):
 
-- `SubjectSeeder` — matérias
-- `CategorySeeder` — categorias
-- `WordSeeder` — vocabulário de inglês
-- `QuestionSeeder` — perguntas dos quizzes
+- `SubjectSeeder` — subjects
+- `CategorySeeder` — categories
+- `WordSeeder` — English vocabulary
+- `QuestionSeeder` — quiz questions
 
-Rodar todos de uma vez:
+Run them all at once:
 
 ```bash
 php artisan db:seed
@@ -140,55 +140,55 @@ php artisan db:seed
 
 ---
 
-## 🔐 Acesso administrativo
+## 🔐 Administrative access
 
-Uma migration cria um usuário administrador inicial. As credenciais são lidas do `.env`, então defina-as **antes** de rodar as migrations:
+A migration creates an initial administrator user. The credentials are read from `.env`, so set them **before** running the migrations:
 
 ```env
 ADMIN_EMAIL=admin@marthina.com.br
 ADMIN_PASSWORD=suaSenhaForte
 ```
 
-> ⚠️ Se `ADMIN_PASSWORD` não for definida, a migration usa o fallback inseguro `change-me`. **Defina uma senha real antes de qualquer uso.** A senha é armazenada com hash; o valor em texto puro existe apenas no `.env` (que **nunca** é commitado). Em um banco já migrado, atualize a senha do admin manualmente (ex.: `php artisan tinker`).
+> ⚠️ If `ADMIN_PASSWORD` is not set, the migration uses the insecure fallback `change-me`. **Set a real password before any use.** The password is stored hashed; the plaintext value exists only in `.env` (which is **never** committed). On an already-migrated database, update the admin password manually (e.g., `php artisan tinker`).
 
-O painel fica acessível em `/admin` para usuários com a flag `is_admin`. Toda ação destrutiva (bloquear, excluir, restaurar) exige justificativa e fica registrada.
+The panel is accessible at `/admin` for users with the `is_admin` flag. Every destructive action (block, delete, restore) requires a justification and is logged.
 
 ---
 
-## 🧪 Testes
+## 🧪 Tests
 
 ```bash
 composer test
-# ou
+# or
 php artisan test
 ```
 
 ---
 
-## 📁 Estrutura (resumo)
+## 📁 Structure (summary)
 
 ```
 app/
-  Livewire/        # Componente Vocabulary (interatividade reativa)
+  Livewire/        # Vocabulary component (reactive interactivity)
   Models/          # User, Word, Category, Subject, Question, QuestionOption,
                    # Score, QuizResult, AdminUserAction
-  Http/            # Controller base (a lógica vive em routes/web.php)
+  Http/            # Base controller (the logic lives in routes/web.php)
 database/
-  migrations/      # Evolução do schema
-  seeders/         # Conteúdo inicial (matérias, palavras, perguntas)
+  migrations/      # Schema evolution
+  seeders/         # Initial content (subjects, words, questions)
 resources/
-  views/           # Telas: home, quiz, vocabulary, ranking, profile, admin, auth/...
-  css/ · js/       # Entradas do Vite
+  views/           # Screens: home, quiz, vocabulary, ranking, profile, admin, auth/...
+  css/ · js/       # Vite entries
 routes/
-  web.php          # Rotas da aplicação (lógica em closures)
+  web.php          # Application routes (logic in closures)
 public/
-  assets/marthina-theme/   # Imagens do tema
+  assets/marthina-theme/   # Theme images
 ```
 
-> ℹ️ Hoje a maior parte da lógica de rotas vive em `routes/web.php` (closures), incluindo o fluxo de convidado, autenticação e administração. Código novo deve seguir a convenção-alvo descrita em [CLAUDE.md](CLAUDE.md) (controllers finos + Form Requests).
+> ℹ️ Today most of the routing logic lives in `routes/web.php` (closures), including the guest flow, authentication and administration. New code should follow the target convention described in [CLAUDE.md](CLAUDE.md) (thin controllers + Form Requests).
 
 ---
 
-## 📄 Licença
+## 📄 License
 
-Projeto pessoal/educacional. Construído sobre o Laravel, que é open-source sob licença [MIT](https://opensource.org/licenses/MIT).
+Personal/educational project. Built on Laravel, which is open-source under the [MIT](https://opensource.org/licenses/MIT) license.
