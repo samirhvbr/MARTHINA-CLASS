@@ -550,6 +550,8 @@
             }
         }
     </style>
+    {{-- Matomo Analytics (self-hosted) — só renderiza com MATOMO_* configurado. --}}
+    @include('partials.matomo')
 </head>
 <body>
     @php
