@@ -562,7 +562,7 @@
                 return $subject->name;
             });
     @endphp
-    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent mb-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-transparent mb-4">
         <div class="container d-flex justify-content-between align-items-center">
             <div>
                 <a class="navbar-brand fw-bold d-block" href="/">
@@ -588,7 +588,7 @@
                 }
             @endphp
             <div class="d-flex align-items-center gap-3">
-                <div class="text-white fw-bold">
+                <div class="fw-bold" style="color: var(--kid-ink);">
                     <i class="fas fa-star me-1"></i>Score: {{ $globalScore }}
                     @if(session('user_name'))
                         &nbsp;|&nbsp;{{ session('user_name') }}
@@ -605,10 +605,10 @@
                     @if(session('is_admin'))
                         <a href="/admin" class="btn btn-sm btn-light">Admin</a>
                     @endif
-                    <a href="/logout" class="btn btn-sm btn-outline-light">Sair</a>
+                    <a href="/logout" class="btn btn-sm btn-outline-secondary">Sair</a>
                 @else
                     <div class="d-flex gap-2">
-                        <a href="/login" class="btn btn-sm btn-outline-light">Entrar</a>
+                        <a href="/login" class="btn btn-sm btn-outline-secondary">Entrar</a>
                         <a href="/register" class="btn btn-sm btn-light">Cadastrar</a>
                     </div>
                 @endif

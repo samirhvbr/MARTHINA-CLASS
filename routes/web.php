@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\AdminUserAction;
 use App\Models\Question;
 use App\Models\QuestionOption;
+use App\Models\QuizResult;
 use App\Models\Score;
 use App\Models\Subject;
 use App\Models\User;
@@ -531,11 +532,11 @@ $renderAdminDashboard = function (Request $request, ?Question $editingQuestion =
 $buildLeaderboard = function () {
     return User::query()
         ->leftJoin('scores', 'users.id', '=', 'scores.user_id')
-        ->select('users.id', 'users.name', 'users.email')
+        ->select('users.id', 'users.name')
         ->selectRaw('COALESCE(SUM(scores.score), 0) as total_score')
         ->selectRaw('COALESCE(SUM(scores.xp), 0) as total_xp')
         ->selectRaw('COALESCE(SUM(CASE WHEN scores.correct = 1 THEN 1 ELSE 0 END), 0) as total_correct')
-        ->groupBy('users.id', 'users.name', 'users.email')
+        ->groupBy('users.id', 'users.name')
         ->orderByDesc('total_score')
         ->orderByDesc('total_xp')
         ->orderBy('users.name')
@@ -687,7 +688,7 @@ Route::post('/login', function (Request $request) use ($storeAuthenticatedUser) 
     $storeAuthenticatedUser($request, $user);
 
     return redirect('/')->with('message', 'Login realizado com sucesso.');
-});
+})->middleware('throttle:login');
 
 Route::post('/guest-login', function (Request $request) use ($startGuestSession) {
     if (trim((string) $request->input('company')) !== '') {
@@ -759,7 +760,7 @@ Route::post('/forgot-password', function (Request $request) {
         'message',
         'Se o e-mail estiver cadastrado, enviamos as instrucoes para redefinir a senha.'
     );
-});
+})->middleware('throttle:forgot-password');
 
 Route::get('/reset-password/{token}', function (string $token, Request $request) {
     if ($token === '') {
@@ -843,7 +844,7 @@ Route::post('/reset-password', function (Request $request) use ($storeAuthentica
     $storeAuthenticatedUser($request, $user);
 
     return redirect('/')->with('message', 'Senha redefinida com sucesso.');
-});
+})->middleware('throttle:reset-password');
 
 Route::get('/register', function () use ($hasAuthenticatedUser) {
     if ($hasAuthenticatedUser()) {
@@ -912,7 +913,7 @@ Route::post('/register', function (Request $request) use ($storeAuthenticatedUse
 
     return redirect('/')
         ->with('message', 'Cadastro concluido. Sua senha inicial e: ' . $generatedPassword . '. Guarde essa senha para entrar depois.');
-});
+})->middleware('throttle:register');
 
 Route::get('/logout', function (Request $request) use ($clearAuthenticatedUser) {
     $clearAuthenticatedUser($request);
@@ -1609,6 +1610,14 @@ Route::get('/quiz/{category}/reset', function ($category_id) use ($hasAuthentica
         $resetQuery->where('user_id', session('user_id'));
     }
     $resetQuery->delete();
+
+    // clear the recorded result/trophy so a replay awards a fresh one
+    $resetResultQuery = QuizResult::where('category_id', $category_id);
+    if (session('user_id')) {
+        $resetResultQuery->where('user_id', session('user_id'));
+    }
+    $resetResultQuery->delete();
+
     // forget the "already recorded" marker so new run will save again
     session()->forget('quiz_done_' . $category_id);
     return redirect('/quiz/' . $category_id);
@@ -1712,13 +1721,19 @@ Route::get('/quiz/{category}', function ($category_id) use ($hasAuthenticatedUse
             if ($isGuest) {
                 $incrementGuestTrophy($trophy);
             } elseif (\Illuminate\Support\Facades\Schema::hasTable('quiz_results')) {
-                \App\Models\QuizResult::create([
-                    'category_id'     => $category_id,
-                    'user_id'         => $userId,
-                    'correct_count'   => $categoryScore,
-                    'total_questions' => $total_questions,
-                    'trophy'          => $trophy,
-                ]);
+                $alreadyRecorded = \App\Models\QuizResult::where('category_id', $category_id)
+                    ->when($userId, fn ($resultQuery) => $resultQuery->where('user_id', $userId))
+                    ->exists();
+
+                if (!$alreadyRecorded) {
+                    \App\Models\QuizResult::create([
+                        'category_id'     => $category_id,
+                        'user_id'         => $userId,
+                        'correct_count'   => $categoryScore,
+                        'total_questions' => $total_questions,
+                        'trophy'          => $trophy,
+                    ]);
+                }
             }
             session([$sessionKey => true]);
         }
@@ -1831,7 +1846,7 @@ Route::get('/quiz/{category}', function ($category_id) use ($hasAuthenticatedUse
             return [
                 'value' => (string) $option->id,
                 'label' => $option->option_text,
-                'key' => $option->option_key ?: chr(65 + $index),
+                'key' => chr(65 + $index),
             ];
         })
         ->all();
@@ -1900,7 +1915,15 @@ Route::post('/quiz/{category}/check', function (Request $request, $category_id) 
             $recordGuestAttempt((int) $category_id, $data);
         } elseif (session('user_id')) {
             $data['user_id'] = session('user_id');
-            Score::create($data);
+
+            $alreadyAnswered = Score::where('category_id', $category_id)
+                ->where('question_id', $question->id)
+                ->where('user_id', session('user_id'))
+                ->exists();
+
+            if (!$alreadyAnswered) {
+                Score::create($data);
+            }
         } else {
             Score::create($data);
         }
@@ -1938,7 +1961,15 @@ Route::post('/quiz/{category}/check', function (Request $request, $category_id) 
         $recordGuestAttempt((int) $category_id, $data);
     } elseif (session('user_id')) {
         $data['user_id'] = session('user_id');
-        Score::create($data);
+
+        $alreadyAnswered = Score::where('category_id', $category_id)
+            ->where('word_id', $word->id)
+            ->where('user_id', session('user_id'))
+            ->exists();
+
+        if (!$alreadyAnswered) {
+            Score::create($data);
+        }
     } else {
         Score::create($data);
     }

@@ -67,8 +67,7 @@
                                 <div class="podium-trophy {{ $podiumClass }}">
                                     <i class="fas fa-{{ $entry->rank === 1 ? 'crown' : ($entry->rank === 2 ? 'medal' : 'award') }}"></i>
                                 </div>
-                                <h4 class="mb-1">{{ $entry->name }}</h4>
-                                <p class="text-muted small mb-3">{{ $entry->email }}</p>
+                                <h4 class="mb-3">{{ $entry->name }}</h4>
                                 <div class="row g-2 text-center">
                                     <div class="col-4">
                                         <div class="profile-quick-stat">
@@ -115,7 +114,6 @@
                                         <x-avatar-badge :name="$entry->name" :rank="$entry->rank <= 3 ? $entry->rank : null" size="sm" />
                                         <div>
                                             <div class="fw-semibold">{{ $entry->name }}</div>
-                                            <small class="text-muted">{{ $entry->email }}</small>
                                         </div>
                                     </div>
                                 </td>

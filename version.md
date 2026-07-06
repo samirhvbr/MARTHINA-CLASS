@@ -1,6 +1,6 @@
 # Versão — Marthina Learning
 
-**Versão atual:** `0.1.1`
+**Versão atual:** `0.1.3`
 
 > Esta versão é a fonte da verdade do projeto e é lida em runtime via
 > `config('app.version')` — a aplicação extrai o **primeiro número semver
@@ -56,6 +56,57 @@ entrega). Commits adicionais da mesma entrega repetem a versão sem novo bump.
 
 > Ordem decrescente (mais recente no topo). Cada entrada lista as mudanças e os
 > gatilhos que justificaram o bump.
+
+### `0.1.3` — 2026-07-06 — Rate limiting nas rotas de autenticação
+
+Fecha a lacuna prioritária da seção 8 do `SECURITY_GUIDELINES.md`.
+
+**Segurança**
+- `AppServiceProvider::boot()` — define 4 limiters via `RateLimiter::for(...)`
+  aplicados com `->middleware('throttle:nome')` nas rotas POST:
+  - `throttle:login` — 5/min por **IP + e-mail** (brute-force de conta).
+  - `throttle:register` — 5/min por **IP** (cadastro em massa).
+  - `throttle:forgot-password` — 3/min por **IP + e-mail** (spam de recuperação).
+  - `throttle:reset-password` — 5/min por **IP** (brute-force de token).
+- `resources/views/errors/429.blade.php` — página amigável no tema infantil para
+  a resposta HTTP 429 (em vez da tela de erro padrão do framework).
+
+**Correção**
+- `routes/web.php` — adiciona o `use App\Models\QuizResult;` que faltava; sem ele
+  o `GET /quiz/{cat}/reset` do lote 0.1.2 lançava erro ao tentar limpar o troféu.
+
+_Gatilhos:_ configuração de segurança (rate limit) e nova view.
+
+### `0.1.2` — 2026-07-06 — Correções de revisão (UI, LGPD e antiduplicação)
+
+Lote de correções levantadas em revisão visual/funcional da plataforma.
+
+**UI**
+- `layout.blade.php` — navbar corrigido: texto de pontuação/usuário e botões
+  "Sair"/"Entrar" ficavam brancos sobre fundo claro (invisíveis); agora usam
+  tom escuro do tema e contorno legível.
+- `categories.blade.php` — o selo de contagem exibia o código PHP cru
+  (`$categories->count() . ' trilhas'`) por faltar o bind `:label`; agora mostra
+  a contagem real (ex.: "9 trilhas").
+
+**Segurança / LGPD**
+- `ranking.blade.php` + `buildLeaderboard()` — o e-mail de todos os usuários
+  (incluindo crianças) aparecia no ranking para qualquer pessoa logada. E-mail
+  removido da exibição e da própria consulta (minimização de dados).
+- Quiz de múltipla escolha — a alternativa correta era sempre gravada com a letra
+  "A" e o quiz reexibia essa chave após embaralhar, entregando a resposta. As
+  letras passam a ser atribuídas pela posição exibida (A–H), sem vazamento.
+
+**Regra de negócio (antiduplicação de pontos/troféus)**
+- `POST /quiz/{cat}/check` — `Score` agora é idempotente por usuário/questão:
+  reenviar a mesma resposta (voltar + reenviar) não soma pontos/XP de novo.
+- Conclusão de quiz — `QuizResult` (troféu) só é criado se ainda não existir para
+  o usuário/categoria, evitando novo troféu a cada relogin ou revisita da tela de
+  conclusão. `GET /quiz/{cat}/reset` passa a limpar também os `QuizResult`, para
+  que um replay legítimo volte a premiar.
+
+_Gatilhos:_ mudança de layout, configuração de segurança (LGPD/vazamento) e regra
+de negócio (pontuação/troféus).
 
 ### `0.1.0` — 2026-06-18 — Padronização de documentação e versionamento
 

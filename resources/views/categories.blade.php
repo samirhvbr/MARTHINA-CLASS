@@ -40,7 +40,7 @@
                         <x-subject-pill :label="$selectedSubjectLabel" :theme="$selectedTheme" :icon="$selectedIcon" />
                     @endif
                     <x-difficulty-seal level="normal" label="Quiz por categoria" icon="list-check" />
-                    <x-difficulty-seal level="easy" label="$categories->count() . ' trilhas'" icon="route" />
+                    <x-difficulty-seal level="easy" :label="$categories->count() . ' trilhas'" icon="route" />
                 </div>
             </div>
             @if($selectedSubject)
